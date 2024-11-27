@@ -1,1 +1,1 @@
-# wikibot
+# PDF to WIKITEXT converter

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Wikitext Converter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        h1, h2 { color: #0056b3; }
+        .upload-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        input[type="file"] {
+            border: 1px solid #ccc;
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover { background-color: #0056b3; }
+        .result-container {
+            margin-top: 20px;
+            position: relative;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+        }
+        #copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #copy-btn:hover { background-color: #218838; }
+        .error { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>PDF to Wikitext Converter</h1>
+    <p>Upload a PDF file to convert it to MediaWiki text format. The entire process runs in a secure, isolated container.</p>
+
+    <div class="upload-form">
+        <form method="POST" enctype="multipart/form-data">
+            <label for="pdf_file">Choose a PDF file:</label><br><br>
+            <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required>
+            <br>
+            <input type="submit" value="Convert">
+        </form>
+    </div>
+
+    {% if error %}
+        <div class="result-container">
+            <h2>Error</h2>
+            <p class="error">{{ error }}</p>
+        </div>
+    {% endif %}
+
+    {% if wikitext %}
+        <div class="result-container">
+            <h2>Result</h2>
+            <textarea id="wikitext-output" readonly>{{ wikitext }}</textarea>
+            <button id="copy-btn" onclick="copyToClipboard()">Copy</button>
+        </div>
+    {% endif %}
+
+    <script>
+        function copyToClipboard() {
+            const textarea = document.getElementById('wikitext-output');
+            textarea.select(); // Select the text
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                // Success feedback
+                const btn = document.getElementById('copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                }, 2000); // Revert back after 2 seconds
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
